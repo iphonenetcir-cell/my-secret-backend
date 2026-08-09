@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Reels Hub</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: black;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+.app {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  height: 100vh;
+  position: relative;
+  scroll-snap-align: start;
+  overflow: hidden;
+  background: black;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: black;
+  cursor: pointer;
+  display: block;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.title {
+  position: absolute;
+  top: 20px;
+  left: 15px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  padding: 10px 16px;
+  border-radius: 30px;
+  color: white;
+  z-index: 10;
+  font-size: 14px;
+  max-width: 85%;
+  pointer-events: none;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.volume {
+  position: absolute;
+  right: 15px;
+  bottom: 120px;
+  width: 55px;
+  height: 55px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(5px);
+  color: white;
+  font-size: 24px;
+  z-index: 20;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.volume:active {
+  transform: scale(0.94);
+}
+
+.play-pause-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  color: white;
+  text-shadow: 0 0 30px rgba(0,0,0,0.8);
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.play-pause-overlay.show {
+  opacity: 1;
+}
+
+.top-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,215,0,0.3);
+}
+
+.top-banner-inner {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.close-top {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: #ff3b30;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px black;
+  line-height: 1;
+}
+
+.bottom-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9998;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+  border-top: 1px solid rgba(255,200,0,0.3);
+}
+
+.bottom-banner-inner {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.close-bottom {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: #ff3b30;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px black;
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .close-top, .close-bottom {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    right: -8px;
+    top: -6px;
+  }
+  .title {
+    font-size: 12px;
+    top: 15px;
+    left: 12px;
+    padding: 8px 14px;
+  }
+  .volume {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    right: 12px;
+    bottom: 100px;
+  }
+  .play-pause-overlay {
+    width: 80px;
+    height: 80px;
+    font-size: 60px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BANNER -->
+<div id="topBannerContainer" class="top-banner" style="display: flex;">
+  <div class="top-banner-inner">
+    <button class="close-top" id="closeTopBtn" aria-label="Close top ad">✕</button>
+    <!-- आप यहाँ अपना ऐड स्क्रिप्ट लगा सकते हैं -->
+  </div>
+</div>
+
+<!-- BOTTOM BANNER -->
+<div id="bottomBannerContainer" class="bottom-banner" style="display: flex;">
+  <div class="bottom-banner-inner">
+    <button class="close-bottom" id="closeBottomBtn" aria-label="Close bottom ad">✕</button>
+  </div>
+</div>
+
+<!-- REELS CONTAINER -->
+<div class="app" id="app"></div>
+
+<!-- === JavaScript (बिना किसी API Key के) === -->
+<script>
+const appContainer = document.getElementById("app");
+
+// ====================================
+// LOAD VIDEOS FROM PYTHON BACKEND (API HIDDEN)
+// ====================================
+async function loadVideos() {
+    try {
+        // यहाँ डेटा आपके Python Server (app.py) से आ रहा है
+        const response = await fetch('http://localhost:5000/api/get-videos');
+        const videos = await response.json();
+        
+        appContainer.innerHTML = "";
+
+        if (!videos || videos.length === 0) {
+            appContainer.innerHTML = `
+                <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; text-align:center; flex-direction:column;">
+                    <h2>🎬 No Reels Yet</h2>
+                    <p style="color:#666; margin-top:10px; font-size:14px;">Admin will add videos soon.</p>
+                </div>
+            `;
+            return;
+        }
+
+        videos.forEach((data, index) => {
+            const safeTitle = (data.title || "🔥 Trending Reel")
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            appContainer.innerHTML += `
+                <div class="card" id="card${index}">
+                    <div class="title">${safeTitle}</div>
+                    <video
+                        id="video${index}"
+                        src="${data.url || ''}"
+                        loop
+                        playsinline
+                        webkit-playsinline
+                        preload="metadata"
+                    ></video>
+                    <div class="play-pause-overlay" id="overlay${index}">▶</div>
+                    <button class="volume" id="btn${index}">🔊</button>
+                </div>
+            `;
+        });
+
+        setupVideos();
+
+    } catch (error) {
+        console.error("Error loading videos:", error);
+        appContainer.innerHTML = `
+            <div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; text-align:center; flex-direction:column;">
+                <h2>⚠️ Connection Error</h2>
+                <p style="color:#666; margin-top:10px; font-size:14px;">Make sure Python Backend is running on port 5000.</p>
+            </div>
+        `;
+    }
+}
+
+// ====================================
+// SETUP VIDEOS (Play/Pause/Mute)
+// ====================================
+function setupVideos() {
+    const videos = document.querySelectorAll("video");
+
+    if (videos.length === 0) return;
+
+    // Autoplay logic using Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+                videos.forEach(v => {
+                    if (v !== video) v.pause();
+                });
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        });
+    }, { threshold: 0.55 });
+
+    videos.forEach((video, index) => {
+        observer.observe(video);
+        video.muted = false;
+       
+        const overlay = document.getElementById(`overlay${index}`);
+        let overlayTimeout = null;
+
+        const handleTap = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const vid = document.getElementById(`video${index}`);
+            const overlayEl = document.getElementById(`overlay${index}`);
+            if (!vid) return;
+
+            if (vid.paused) {
+                vid.play().catch(() => {});
+                overlayEl.textContent = '▶';
+            } else {
+                vid.pause();
+                overlayEl.textContent = '⏸';
+            }
+
+            overlayEl.classList.add('show');
+            if (overlayTimeout) clearTimeout(overlayTimeout);
+            overlayTimeout = setTimeout(() => {
+                overlayEl.classList.remove('show');
+            }, 500);
+        };
+
+        const videoElement = document.getElementById(`video${index}`);
+        if (videoElement) {
+            videoElement.removeEventListener('click', handleTap);
+            videoElement.removeEventListener('touchstart', handleTap);
+            videoElement.addEventListener('click', handleTap);
+            videoElement.addEventListener('touchstart', handleTap, { passive: false });
+        }
+
+        const volumeBtn = document.getElementById(`btn${index}`);
+        if (volumeBtn) {
+            volumeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMute(index);
+            });
+            volumeBtn.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                toggleMute(index);
+            }, { passive: false });
+        }
+    });
+
+    // Auto-play first video
+    setTimeout(() => {
+        const firstVideo = document.querySelector("video");
+        if (firstVideo && firstVideo.paused) {
+            firstVideo.play().catch(() => {});
+        }
+    }, 300);
+}
+
+// ====================================
+// TOGGLE MUTE
+// ====================================
+function toggleMute(i) {
+    const video = document.getElementById("video" + i);
+    const btn = document.getElementById("btn" + i);
+    if (!video) return;
+    video.muted = !video.muted;
+    btn.innerHTML = video.muted ? "🔇" : "🔊";
+    btn.style.transform = "scale(0.93)";
+    setTimeout(() => { btn.style.transform = ""; }, 100);
+}
+
+// ====================================
+// CLOSE BANNERS
+// ====================================
+document.getElementById("closeTopBtn")?.addEventListener("click", function(e) {
+    e.preventDefault(); e.stopPropagation();
+    document.getElementById("topBannerContainer").style.display = "none";
+});
+document.getElementById("closeBottomBtn")?.addEventListener("click", function(e) {
+    e.preventDefault(); e.stopPropagation();
+    document.getElementById("bottomBannerContainer").style.display = "none";
+});
+
+// Prevent Double Tap Zoom
+document.addEventListener('touchend', function(e) {
+    if (e.target.closest('video')) e.preventDefault();
+}, { passive: false });
+
+console.log("🎬 Reels Hub Connected to Python Backend");
+loadVideos();
+</script>
+
+</body>
+</html>
