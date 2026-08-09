@@ -108,6 +108,9 @@ def admin():
     return admin_html
 
 if __name__ == '__main__':
-    print("✅ Server running at: http://localhost:5000")
-    print("✅ Admin Panel at: http://localhost:5000/admin")
-    app.run(debug=True, port=5000)
+    # Render ke liye PORT fix
+    port = int(os.environ.get('PORT', 5000))
+    print(f"✅ Server running on port {port}")
+    print(f"✅ Admin Panel at: /admin")
+    # Host='0.0.0.0' Render ke liye zaroori hai
+    app.run(host='0.0.0.0', port=port)
